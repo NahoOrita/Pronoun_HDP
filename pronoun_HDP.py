@@ -2,9 +2,8 @@
 @author: Naho Orita (naho@umd.edu)
 
 This is a python implementation of a non-parametric author topic
-model for simulation of pronoun category learning (Orita et al. 2013).
-(paper here: http://mindmodeling.org/cogsci2013/papers/0569/paper0569)
-*** This code comes with no guarantees. ***
+model for the simulation of pronoun category learning (Orita et
+al. 2013).
 """
 
 import sys
@@ -180,7 +179,7 @@ class State:
             
     def remove_topic(self, topic):
         """
-        Remove a topic currently not-used.
+        Remove the topic currently not-used.
         Put it in unused_topics list.
         """
         self.used_topics.remove(topic)
@@ -202,8 +201,8 @@ class State:
 
     def old_dish_lhood(self, topic, word):
         """
-        Compute lhood term when an used topic is assigned
-        (i.e., old dish at franchise level)
+        Compute likelihood term when the used topic is assigned
+        (i.e., the old dish at franchise level)
         """
         lhood = (self.V_ki[topic][word] + self.beta)
         lhood /= (self.V_ki[topic].N() + self.V * self.beta)
@@ -217,8 +216,8 @@ class State:
 	topic assignment, conditioned on all other assignments:
 	p(x,z|-) = p(w|-) * p(z|-) * p(Discourse) 
                 -- p(w|-): likelihood
-                -- p(z|-): priors given by Chinese restaurant franchise
-                -- p(Discourse): priors estimated in the experiment
+                -- p(z|-): prior given by Chinese restaurant franchise
+                -- p(Discourse): prior estimated in the experiment
         """
 
         for j in range(self.J):
@@ -266,13 +265,13 @@ class State:
     
     def table_log_lhood(self):
         """
-        Compute the table level (the second level restaurants) prior.
+        Compute prior at the second level restaurants.
         """
         log_lhood = 0
         for j in xrange(self.J):
             log_lhood += log(self.alpha) * len(self.N_jk[j])
             for k in self.N_jk[j]:
-                if self.N_jk[j][k] != 0:
+                if self.N_jk[j][k] > 0:
                     log_lhood += lgammln(self.N_jk[j][k])
             denominator = 1
             for t in range(1, len(self.N_jk[j])+1):
@@ -284,7 +283,7 @@ class State:
     
     def dish_log_lhood(self):
         """
-        Compute the topic level (dishes at the franchise level) prior.
+        Compute prior at the topic level (dishes at the franchise level). 
         """
         
         log_lhood = log(self.gamma) * self.K

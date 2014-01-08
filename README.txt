@@ -11,7 +11,7 @@ You will need to have the NLTK package installed.
 How to use:
 > python pronoun_HDP.py iterations alpha gamma beta
 
-:iterations: a number of iterations (say 1000-2000?)
+:iterations: a number of iterations (say 2000?)	
 :alpha, gamma, beta: hyperparameters (described in Orita et al. 2013)
 
 Data:

@@ -184,7 +184,7 @@ class State:
         """
         self.used_topics.remove(topic)
         self.unused_topics.insert(0, topic)
-        self.M_k[topic] -= 1
+        self.M_k[topic] = 0
         self.K = len(self.used_topics)
 
         
@@ -269,10 +269,11 @@ class State:
         """
         log_lhood = 0
         for j in xrange(self.J):
-            log_lhood += log(self.alpha) * len(self.N_jk[j])
-            for k in self.N_jk[j]:
-                if self.N_jk[j][k] > 0:
-                    log_lhood += lgammln(self.N_jk[j][k])
+            used_tables = [k for k in self.N_jk[j] if self.N_jk[j][k] > 0]
+            log_lhood += log(self.alpha) * len(used_tables)
+            for k in used_tables:
+                log_lhood += lgammln(self.N_jk[j][k])
+                    
             denominator = 1
             for t in range(1, len(self.N_jk[j])+1):
                 denominator *= (t + self.alpha -1)
@@ -285,12 +286,18 @@ class State:
         """
         Compute prior at the topic level (dishes at the franchise level). 
         """
-        
+        # N for the denominator prod
+        for j in xrange(self.J):
+            used_tables = [k for k in self.N_jk[j] if self.N_jk[j][k] > 0] 
+        N = len(used_tables)
+
+        # the numerator
         log_lhood = log(self.gamma) * self.K
         for k in self.used_topics:
             log_lhood += lgammln(self.M_k[k])
+            
         denominator = 1
-        for m in range(1, self.N+1):
+        for m in range(1, N+1):
             denominator *= (m + self.gamma -1)
 
         return log_lhood - log(denominator)

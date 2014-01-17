@@ -274,10 +274,11 @@ class State:
             for k in used_tables:
                 log_lhood += lgammln(self.N_jk[j][k])
                     
-            denominator = 1
-            for t in range(1, len(self.N_jk[j])+1):
-                denominator *= (t + self.alpha -1)
-            log_lhood -= log(denominator)
+            denominator = 0
+            for t in range(1, self.N_jk[j].N()+1):
+                denominator += log(t + self.alpha -1)
+                
+            log_lhood -= denominator
             
         return log_lhood
 
@@ -286,21 +287,16 @@ class State:
         """
         Compute prior at the topic level (dishes at the franchise level). 
         """
-        # N for the denominator prod
-        for j in xrange(self.J):
-            used_tables = [k for k in self.N_jk[j] if self.N_jk[j][k] > 0] 
-        N = len(used_tables)
-
-        # the numerator
+        
         log_lhood = log(self.gamma) * self.K
         for k in self.used_topics:
             log_lhood += lgammln(self.M_k[k])
             
-        denominator = 1
-        for m in range(1, N+1):
-            denominator *= (m + self.gamma -1)
+        denominator = 0
+        for m in range(1, self.M_k.N()+1):        
+            denominator += log(m + self.gamma -1)
 
-        return log_lhood - log(denominator)
+        return log_lhood - denominator
 
     
     def word_log_lhood(self):
@@ -311,8 +307,8 @@ class State:
         log_lhood = lgammln(self.V * self.beta)
         log_lhood -= lgammln(self.beta) * self.V
         log_lhood = log_lhood * self.K
-        for k in range(self.K):
-            for i in range(self.V):
+        for k in self.used_topics:
+            for i in xrange(self.V):
                 log_lhood += lgammln(self.V_ki[k][i] + self.beta)
             log_lhood -= lgammln(self.V_ki[k].N() + (self.V * self.beta))
         

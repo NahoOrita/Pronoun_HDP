@@ -13,5 +13,4 @@ This is a python implementation of a non-parametric author topic model for simul
 
 *input.py* contains input data for this simulation.
 (50 tokens: 25 reflexive pronouns and 25 non-reflexive pronouns)
-Put *input.py* and *pronoun_HDP.py* in a same directory.
 
